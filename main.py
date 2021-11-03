@@ -29,6 +29,7 @@ def main():
     load_dotenv()
     dvmn_api_token = os.getenv('DVMN_API_TOKEN')
     bot = telegram.Bot(token=os.getenv('TG_API_TOKEN'))
+    chat_id = os.getenv('TG_CHAT_ID')
     timestamp = get_last_timestamp(dvmn_api_token)
     while True:
         try:
@@ -44,7 +45,7 @@ def main():
                     text = f'Ваша работа "{lesson_title}" проверена. ' \
                            f'Все хорошо, можно приступать к следующему уроку! ' \
                            f'Вот ссылка: {lesson_url}'
-                bot.send_message(text=text, chat_id=465065578)
+                bot.send_message(text=text, chat_id=chat_id)
             else:
                 print('timeout')
                 timestamp = response_json['timestamp_to_request']
