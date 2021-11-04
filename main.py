@@ -46,10 +46,9 @@ def main():
                            f'Вот ссылка: {lesson_url}'
                 bot.send_message(text=text, chat_id=chat_id)
             else:
-                print('timeout')
                 timestamp = response['timestamp_to_request']
         except requests.exceptions.Timeout:
-            print('timeout')
+            pass
         except requests.exceptions.ConnectionError:
             print('ConnectionError')
             time.sleep(5)
