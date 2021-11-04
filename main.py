@@ -12,11 +12,10 @@ def get_last_timestamp(dvmn_api_token):
     headers = {'Authorization': dvmn_api_token}
     response = requests.get(dvmn_api_url, headers=headers)
     response.raise_for_status()
-    response_json = response.json()
-    return response_json['results'][0]['timestamp']
+    return response.json()['results'][0]['timestamp']
 
 
-def get_dvmn_api_json(dvmn_api_token, timestamp):
+def get_dvmn_api(dvmn_api_token, timestamp):
     dvmn_api_url_long_polling = 'https://dvmn.org/api/long_polling/'
     headers = {'Authorization': dvmn_api_token}
     payload = {'timestamp': timestamp}
@@ -33,12 +32,12 @@ def main():
     timestamp = get_last_timestamp(dvmn_api_token)
     while True:
         try:
-            response_json = get_dvmn_api_json(dvmn_api_token, timestamp)
-            if response_json['status'] == 'found':
-                timestamp = response_json['last_attempt_timestamp']
-                lesson_title = response_json['new_attempts'][0]['lesson_title']
-                lesson_url = response_json['new_attempts'][0]['lesson_url']
-                if response_json['new_attempts'][0]['is_negative']:
+            response = get_dvmn_api(dvmn_api_token, timestamp)
+            if response['status'] == 'found':
+                timestamp = response['last_attempt_timestamp']
+                lesson_title = response['new_attempts'][0]['lesson_title']
+                lesson_url = response['new_attempts'][0]['lesson_url']
+                if response['new_attempts'][0]['is_negative']:
                     text = f'Ваша работа "{lesson_title}" проверена. К сожалению, в работе есть ошибки! ' \
                            f'Вот ссылка: {lesson_url}'
                 else:
@@ -48,7 +47,7 @@ def main():
                 bot.send_message(text=text, chat_id=chat_id)
             else:
                 print('timeout')
-                timestamp = response_json['timestamp_to_request']
+                timestamp = response['timestamp_to_request']
         except requests.exceptions.Timeout:
             print('timeout')
         except requests.exceptions.ConnectionError:
