@@ -16,7 +16,7 @@ def get_last_timestamp(dvmn_api_token):
     return response.json()['results'][0]['timestamp']
 
 
-def get_dvmn_api(dvmn_api_token, timestamp):
+def get_lesson_check(dvmn_api_token, timestamp):
     dvmn_api_url_long_polling = 'https://dvmn.org/api/long_polling/'
     headers = {'Authorization': dvmn_api_token}
     payload = {'timestamp': timestamp}
@@ -33,7 +33,7 @@ def main():
     timestamp = get_last_timestamp(dvmn_api_token)
     while True:
         try:
-            response = get_dvmn_api(dvmn_api_token, timestamp)
+            response = get_lesson_check(dvmn_api_token, timestamp)
             if response['status'] == 'found':
                 timestamp = response['last_attempt_timestamp']
                 for attempt in response['new_attempts']:
