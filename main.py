@@ -1,4 +1,5 @@
 import os
+import textwrap
 import time
 
 import requests
@@ -35,16 +36,20 @@ def main():
             response = get_dvmn_api(dvmn_api_token, timestamp)
             if response['status'] == 'found':
                 timestamp = response['last_attempt_timestamp']
-                lesson_title = response['new_attempts'][0]['lesson_title']
-                lesson_url = response['new_attempts'][0]['lesson_url']
-                if response['new_attempts'][0]['is_negative']:
-                    text = f'Ваша работа "{lesson_title}" проверена. К сожалению, в работе есть ошибки! ' \
-                           f'Вот ссылка: {lesson_url}'
-                else:
-                    text = f'Ваша работа "{lesson_title}" проверена. ' \
-                           f'Все хорошо, можно приступать к следующему уроку! ' \
-                           f'Вот ссылка: {lesson_url}'
-                bot.send_message(text=text, chat_id=chat_id)
+                for attempt in response['new_attempts']:
+                    lesson_title = attempt['lesson_title']
+                    lesson_url = attempt['lesson_url']
+                    if attempt['is_negative']:
+                        text = f'''\
+                        Ваша работа "{lesson_title}" проверена. К сожалению, в работе есть ошибки!
+                        Вот ссылка: {lesson_url}
+                        '''
+                    else:
+                        text = f'''\
+                        Ваша работа "{lesson_title}" проверена.
+                        Все хорошо, можно приступать к следующему уроку!
+                        Вот ссылка: {lesson_url}'''
+                    bot.send_message(text=textwrap.dedent(text), chat_id=chat_id)
             else:
                 timestamp = response['timestamp_to_request']
         except requests.exceptions.Timeout:
