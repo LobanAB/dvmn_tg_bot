@@ -27,9 +27,9 @@ def get_lesson_check(dvmn_api_token, timestamp):
 
 def main():
     load_dotenv()
-    dvmn_api_token = os.getenv('DVMN_API_TOKEN')
-    bot = telegram.Bot(token=os.getenv('TG_API_TOKEN'))
-    chat_id = os.getenv('TG_CHAT_ID')
+    dvmn_api_token = os.environ['DVMN_API_TOKEN']
+    bot = telegram.Bot(token=os.environ['TG_API_TOKEN'])
+    chat_id = os.environ['TG_CHAT_ID']
     timestamp = get_last_timestamp(dvmn_api_token)
     while True:
         try:
