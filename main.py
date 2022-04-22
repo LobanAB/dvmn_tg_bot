@@ -50,7 +50,7 @@ def main():
     # handler = logging.StreamHandler(sys.stdout)
     # log.addHandler(handler)
     # log.warning('Бот запущен')
-    while True:
+    # while True:
         # try:
         #     response = get_lesson_check(dvmn_api_token, timestamp)
         #     if response['status'] == 'found':
@@ -76,10 +76,10 @@ def main():
         # except requests.exceptions.ConnectionError:
         #     print('ConnectionError')
         #     time.sleep(5)
-        try:
-            0 / 0
-        except Exception:
-            logging.exception()
+    try:
+        0 / 0
+    except Exception:
+        logging.exception()
 
 
 if __name__ == '__main__':
