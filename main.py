@@ -36,9 +36,8 @@ def main():
 
     log = logging.getLogger()
     handler = logging.StreamHandler(sys.stdout)
-    handler.setLevel(logging.DEBUG)
     log.addHandler(handler)
-    log.info('Бот запущен')
+    log.warning('Бот запущен')
 
     while True:
         try:
