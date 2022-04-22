@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 import textwrap
 import time
 
@@ -32,7 +33,13 @@ def main():
     bot = telegram.Bot(token=os.environ['TG_API_TOKEN'])
     chat_id = os.environ['TG_CHAT_ID']
     timestamp = get_last_timestamp(dvmn_api_token)
-    logging.warning('Бот запущен')
+
+    log = logging.getLogger()
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setLevel(logging.DEBUG)
+    log.addHandler(handler)
+    log.info('Бот запущен')
+
     while True:
         try:
             response = get_lesson_check(dvmn_api_token, timestamp)
