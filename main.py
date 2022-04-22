@@ -46,43 +46,38 @@ def main():
     chat_id = handler.chat_id
     timestamp = get_last_timestamp(dvmn_api_token)
     logger.warning('Бот запущен')
-    # log = logging.getLogger()
-    # handler = logging.StreamHandler(sys.stdout)
-    # log.addHandler(handler)
-    # log.warning('Бот запущен')
-    # while True:
-        # try:
-        #     response = get_lesson_check(dvmn_api_token, timestamp)
-        #     if response['status'] == 'found':
-        #         timestamp = response['last_attempt_timestamp']
-        #         for attempt in response['new_attempts']:
-        #             lesson_title = attempt['lesson_title']
-        #             lesson_url = attempt['lesson_url']
-        #             if attempt['is_negative']:
-        #                 text = f'''\
-        #                 Ваша работа "{lesson_title}" проверена. К сожалению, в работе есть ошибки!
-        #                 Вот ссылка: {lesson_url}
-        #                 '''
-        #             else:
-        #                 text = f'''\
-        #                 Ваша работа "{lesson_title}" проверена.
-        #                 Все хорошо, можно приступать к следующему уроку!
-        #                 Вот ссылка: {lesson_url}'''
-        #             bot.send_message(text=textwrap.dedent(text), chat_id=chat_id)
-        #     else:
-        #         timestamp = response['timestamp_to_request']
-        # except requests.exceptions.Timeout:
-        #     pass
-        # except requests.exceptions.ConnectionError:
-        #     print('ConnectionError')
-        #     time.sleep(5)
-    try:
-        0 / 0
-    except Exception:
-        logging.exception()
+    while True:
+        try:
+            response = get_lesson_check(dvmn_api_token, timestamp)
+            if response['status'] == 'found':
+                timestamp = response['last_attempt_timestamp']
+                for attempt in response['new_attempts']:
+                    lesson_title = attempt['lesson_title']
+                    lesson_url = attempt['lesson_url']
+                    if attempt['is_negative']:
+                        text = f'''\
+                        Ваша работа "{lesson_title}" проверена. К сожалению, в работе есть ошибки!
+                        Вот ссылка: {lesson_url}
+                        '''
+                    else:
+                        text = f'''\
+                        Ваша работа "{lesson_title}" проверена.
+                        Все хорошо, можно приступать к следующему уроку!
+                        Вот ссылка: {lesson_url}'''
+                    bot.send_message(text=textwrap.dedent(text), chat_id=chat_id)
+            else:
+                timestamp = response['timestamp_to_request']
+        except requests.exceptions.Timeout:
+            pass
+        except requests.exceptions.ConnectionError:
+            print('ConnectionError')
+            time.sleep(5)
+        except Exception:
+            logger.exception('Бот упал с ошибкой:')
 
 
 if __name__ == '__main__':
+    load_dotenv()
     logger = logging.getLogger()
     logger.setLevel(logging.WARNING)
     handler = TelegramLogsHandler()
