@@ -10,6 +10,18 @@ from dotenv import load_dotenv
 import telegram
 
 
+class TelegramLogsHandler(logging.Handler):
+
+    def __init__(self):
+        super().__init__()
+        self.chat_id = os.environ['TG_CHAT_ID']
+        self.tg_bot = telegram.Bot(token=os.environ['TG_API_TOKEN'])
+
+    def emit(self, record):
+        log_entry = self.format(record)
+        self.tg_bot.send_message(chat_id=self.chat_id, text=log_entry)
+
+
 def get_last_timestamp(dvmn_api_token):
     dvmn_api_url = 'https://dvmn.org/api/user_reviews/'
     headers = {'Authorization': dvmn_api_token}
@@ -30,15 +42,14 @@ def get_lesson_check(dvmn_api_token, timestamp):
 def main():
     load_dotenv()
     dvmn_api_token = os.environ['DVMN_API_TOKEN']
-    bot = telegram.Bot(token=os.environ['TG_API_TOKEN'])
+    bot = handler.tg_bot
     chat_id = os.environ['TG_CHAT_ID']
     timestamp = get_last_timestamp(dvmn_api_token)
-
-    log = logging.getLogger()
-    handler = logging.StreamHandler(sys.stdout)
-    log.addHandler(handler)
-    log.warning('Бот запущен')
-
+    logger.warning('Бот запущен')
+    # log = logging.getLogger()
+    # handler = logging.StreamHandler(sys.stdout)
+    # log.addHandler(handler)
+    # log.warning('Бот запущен')
     while True:
         try:
             response = get_lesson_check(dvmn_api_token, timestamp)
@@ -68,4 +79,8 @@ def main():
 
 
 if __name__ == '__main__':
+    logger = logging.getLogger()
+    logger.setLevel(logging.WARNING)
+    handler = TelegramLogsHandler()
+    logger.addHandler(handler)
     main()
