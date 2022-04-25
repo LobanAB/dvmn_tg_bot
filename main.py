@@ -44,7 +44,7 @@ def main():
     bot = handler.tg_bot
     chat_id = handler.chat_id
     timestamp = get_last_timestamp(dvmn_api_token)
-    logger.warning('Бот запущен')
+    logger.info('Бот запущен')
     while True:
         try:
             response = get_lesson_check(dvmn_api_token, timestamp)
@@ -68,9 +68,6 @@ def main():
                 timestamp = response['timestamp_to_request']
         except requests.exceptions.Timeout:
             pass
-        except requests.exceptions.ConnectionError:
-            print('ConnectionError')
-            time.sleep(5)
         except Exception:
             logger.exception('Бот упал с ошибкой:')
 
