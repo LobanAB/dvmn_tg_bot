@@ -1,7 +1,6 @@
 import logging
 import os
 import textwrap
-import time
 
 import requests
 
@@ -11,10 +10,10 @@ import telegram
 
 class TelegramLogsHandler(logging.Handler):
 
-    def __init__(self):
+    def __init__(self, chat_id, tg_api_token):
         super().__init__()
-        self.chat_id = os.environ['TG_CHAT_ID']
-        self.tg_bot = telegram.Bot(token=os.environ['TG_API_TOKEN'])
+        self.chat_id = chat_id
+        self.tg_bot = telegram.Bot(token=tg_api_token)
 
     def emit(self, record):
         log_entry = self.format(record)
@@ -39,10 +38,8 @@ def get_lesson_check(dvmn_api_token, timestamp):
 
 
 def main():
-    load_dotenv()
     dvmn_api_token = os.environ['DVMN_API_TOKEN']
     bot = handler.tg_bot
-    chat_id = handler.chat_id
     timestamp = get_last_timestamp(dvmn_api_token)
     logger.info('Бот запущен')
     while True:
@@ -74,8 +71,10 @@ def main():
 
 if __name__ == '__main__':
     load_dotenv()
+    chat_id = os.environ['TG_CHAT_ID']
+    tg_api_token = os.environ['TG_API_TOKEN']
     logger = logging.getLogger()
     logger.setLevel(logging.WARNING)
-    handler = TelegramLogsHandler()
+    handler = TelegramLogsHandler(chat_id, tg_api_token)
     logger.addHandler(handler)
     main()
