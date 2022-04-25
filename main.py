@@ -38,16 +38,23 @@ def get_lesson_check(dvmn_api_token, timestamp):
 
 
 def main():
+    load_dotenv()
+    chat_id = os.environ['TG_CHAT_ID']
+    tg_api_token = os.environ['TG_API_TOKEN']
     dvmn_api_token = os.environ['DVMN_API_TOKEN']
+    logger = logging.getLogger()
+    logger.setLevel(logging.WARNING)
+    handler = TelegramLogsHandler(chat_id, tg_api_token)
+    logger.addHandler(handler)
     bot = handler.tg_bot
     timestamp = get_last_timestamp(dvmn_api_token)
     logger.info('Бот запущен')
     while True:
         try:
-            response = get_lesson_check(dvmn_api_token, timestamp)
-            if response['status'] == 'found':
-                timestamp = response['last_attempt_timestamp']
-                for attempt in response['new_attempts']:
+            code_review_status = get_lesson_check(dvmn_api_token, timestamp)
+            if code_review_status['status'] == 'found':
+                timestamp = code_review_status['last_attempt_timestamp']
+                for attempt in code_review_status['new_attempts']:
                     lesson_title = attempt['lesson_title']
                     lesson_url = attempt['lesson_url']
                     if attempt['is_negative']:
@@ -62,7 +69,7 @@ def main():
                         Вот ссылка: {lesson_url}'''
                     bot.send_message(text=textwrap.dedent(text), chat_id=chat_id)
             else:
-                timestamp = response['timestamp_to_request']
+                timestamp = code_review_status['timestamp_to_request']
         except requests.exceptions.Timeout:
             pass
         except Exception:
@@ -70,11 +77,4 @@ def main():
 
 
 if __name__ == '__main__':
-    load_dotenv()
-    chat_id = os.environ['TG_CHAT_ID']
-    tg_api_token = os.environ['TG_API_TOKEN']
-    logger = logging.getLogger()
-    logger.setLevel(logging.WARNING)
-    handler = TelegramLogsHandler(chat_id, tg_api_token)
-    logger.addHandler(handler)
     main()
