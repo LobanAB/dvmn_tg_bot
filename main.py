@@ -8,6 +8,8 @@ import requests
 from dotenv import load_dotenv
 import telegram
 
+logger = logging.getLogger(__file__)
+
 
 class TelegramLogsHandler(logging.Handler):
 
@@ -43,7 +45,6 @@ def main():
     chat_id = os.environ['TG_CHAT_ID']
     tg_api_token = os.environ['TG_API_TOKEN']
     dvmn_api_token = os.environ['DVMN_API_TOKEN']
-    logger = logging.getLogger()
     logger.setLevel(logging.WARNING)
     handler = TelegramLogsHandler(chat_id, tg_api_token)
     logger.addHandler(handler)
