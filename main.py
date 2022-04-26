@@ -1,6 +1,7 @@
 import logging
 import os
 import textwrap
+import time
 
 import requests
 
@@ -72,6 +73,9 @@ def main():
                 timestamp = code_review_status['timestamp_to_request']
         except requests.exceptions.Timeout:
             pass
+        except requests.exceptions.ConnectionError:
+            print('ConnectionError')
+            time.sleep(5)
         except Exception:
             logger.exception('Бот упал с ошибкой:')
 
